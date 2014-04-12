@@ -1,7 +1,7 @@
-# = Define: vagrantee::phpini
+# = Define: txtcmdr::phpini
 # Based on the example42 php module, customised here to match the paths on apache 2.4.6
 #
-define vagrantee::phpini (
+define txtcmdr::phpini (
     $value       = '',
     $template    = 'extra-ini.erb',
     $target      = 'extra.ini',
