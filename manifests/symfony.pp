@@ -4,10 +4,10 @@ define txtcmdr::symfony(
 
   file { $path: ensure  => directory }
 
-  exec { 'composer --prefer-dist --no-interaction create-project symfony/framework-standard-edition ./':
-    /*command     => 'composer --verbose --no-interaction create-project symfony/framework-standard-edition',*/
+  exec { 'install symfony':
+    command     => 'composer --prefer-dist --no-interaction create-project symfony/framework-standard-edition ./',
     cwd         => "$path",
-    environment => 'COMPOSER_HOME=/usr/bin/',
+    environment => ['COMPOSER_HOME=/usr/bin/', 'COMPOSER_PROCESS_TIMEOUT=4000'],
     creates     => "$path/web",
     timeout     => 0,
     require     => File[$path],
