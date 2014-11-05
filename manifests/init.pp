@@ -1,4 +1,4 @@
-
+class txtcmdr{
   file{'/etc/txtcmdr':
     ensure => directory,
     purge => true,
@@ -15,4 +15,4 @@
     source  => 'puppet:///modules/txtcmdr/postfix/map.erb',
     require => File['/etc/txtcmdr'],
   }
-
+}
