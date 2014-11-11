@@ -39,7 +39,7 @@ class txtcmdr::params {
   # General Settings
   $my_class = ''
   $source = ''
-  $source_dir = 'files'
+  $source_dir = 'files/config'
   $source_dir_purge = false
   $template = ''
   $options = ''
