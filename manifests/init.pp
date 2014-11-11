@@ -122,49 +122,17 @@ class txtcmdr (
     false => undef,
   }
 
-  $manage_file_replace = $txtcmdr::bool_audit_only ? {
-    true  => false,
-    false => true,
-  }
-
-  $manage_file_source = $txtcmdr::source ? {
-    ''        => undef,
-    default   => $txtcmdr::source,
-  }
-
-  $manage_file_content = $txtcmdr::template ? {
-    ''        => undef,
-    default   => template($txtcmdr::template),
-  }
-
   ### Managed resources
-  file { 'txtcmdr.conf':
-    ensure  => $txtcmdr::manage_file,
-    path    => $txtcmdr::config_file,
-    mode    => $txtcmdr::config_file_mode,
-    owner   => $txtcmdr::config_file_owner,
-    group   => $txtcmdr::config_file_group,
-    source  => $txtcmdr::manage_file_source,
-    content => $txtcmdr::manage_file_content,
+
+  # The whole txtcmdr configuration directory can be recursively overriden
+  file { 'txtcmdr.dir':
+    ensure  => directory,
+    path    => $txtcmdr::config_dir,
+    recurse => true,
+    purge   => $txtcmdr::bool_source_dir_purge,
     replace => $txtcmdr::manage_file_replace,
     audit   => $txtcmdr::manage_audit,
     noop    => $txtcmdr::bool_noops,
-  }
-
-  # The whole txtcmdr configuration directory can be recursively overriden
-  if $txtcmdr::source_dir {
-    file { 'txtcmdr.dir':
-      ensure  => directory,
-      path    => $txtcmdr::config_dir,
-      require => Package[$txtcmdr::package],
-      source  => $txtcmdr::source_dir,
-      recurse => true,
-      purge   => $txtcmdr::bool_source_dir_purge,
-      force   => $txtcmdr::bool_source_dir_purge,
-      replace => $txtcmdr::manage_file_replace,
-      audit   => $txtcmdr::manage_audit,
-      noop    => $txtcmdr::bool_noops,
-    }
   }
 
 
