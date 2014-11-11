@@ -16,10 +16,6 @@ class txtcmdr::params {
 
   ### Application related parameters
 
-  $package = $::operatingsystem ? {
-    default => 'txtcmdr',
-  }
-
   $config_dir = $::operatingsystem ? {
     default => '/etc/txtcmdr',
   }

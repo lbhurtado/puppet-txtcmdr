@@ -112,11 +112,6 @@ class txtcmdr (
   $bool_noops=any2bool($noops)
 
   ### Definition of some variables used in the module
-  $manage_package = $txtcmdr::bool_absent ? {
-    true  => 'absent',
-    false => $txtcmdr::version,
-  }
-
   $manage_file = $txtcmdr::bool_absent ? {
     true    => 'absent',
     default => 'present',
@@ -143,18 +138,12 @@ class txtcmdr (
   }
 
   ### Managed resources
-  package { $txtcmdr::package:
-    ensure  => $txtcmdr::manage_package,
-    noop    => $txtcmdr::bool_noops,
-  }
-
   file { 'txtcmdr.conf':
     ensure  => $txtcmdr::manage_file,
     path    => $txtcmdr::config_file,
     mode    => $txtcmdr::config_file_mode,
     owner   => $txtcmdr::config_file_owner,
     group   => $txtcmdr::config_file_group,
-    require => Package[$txtcmdr::package],
     source  => $txtcmdr::manage_file_source,
     content => $txtcmdr::manage_file_content,
     replace => $txtcmdr::manage_file_replace,
