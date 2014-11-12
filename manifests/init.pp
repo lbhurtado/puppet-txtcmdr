@@ -125,16 +125,19 @@ class txtcmdr (
   ### Managed resources
 
   # The whole txtcmdr configuration directory can be recursively overriden
-  file { 'txtcmdr.dir':
-    ensure  => directory,
-    path    => $txtcmdr::config_dir,
-    recurse => true,
-    purge   => $txtcmdr::bool_source_dir_purge,
-    replace => $txtcmdr::manage_file_replace,
-    audit   => $txtcmdr::manage_audit,
-    noop    => $txtcmdr::bool_noops,
+  if $txtcmdr::source_dir {
+    file { 'txtcmdr.dir':
+      ensure  => directory,
+      path    => $txtcmdr::config_dir,
+      source  => $txtcmdr::source_dir,
+      recurse => true,
+      purge   => $txtcmdr::bool_source_dir_purge,
+      force   => $txtcmdr::bool_source_dir_purge,
+      replace => $txtcmdr::manage_file_replace,
+      audit   => $txtcmdr::manage_audit,
+      noop    => $txtcmdr::bool_noops,
+    }
   }
-
 
   ### Include custom class if $my_class is set
   if $txtcmdr::my_class {
