@@ -48,14 +48,14 @@ class txtcmdr (
   }
 
   file{'postfix_map_template':
-    ensure  => $txtcmdr::manage_file,,
-    path    => $txtcmdr::$postfix_map_template,
+    ensure  => $txtcmdr::manage_file,
+    path    => $txtcmdr::postfix_map_template,
     require => File['txtcmdr.dir'],
   }
 
   file{'postfix_db_init_sql':
-    ensure  => $txtcmdr::manage_file,,
-    path    => $txtcmdr::$postfix_db_init_sql,
+    ensure  => $txtcmdr::manage_file,
+    path    => $txtcmdr::postfix_db_init_sql,
     require => File['txtcmdr.dir'],
   }
 
