@@ -47,13 +47,13 @@ class txtcmdr (
     force   => $txtcmdr::bool_source_dir_purge,
   }
 
-  file{'postfix_map_template':
+  file{'map.erb':
     ensure  => $txtcmdr::manage_file,
     path    => $txtcmdr::postfix_map_template,
     require => File['txtcmdr.dir'],
   }
 
-  file{'postfix_db_init_sql':
+  file{'postfix.sql':
     ensure  => $txtcmdr::manage_file,
     path    => $txtcmdr::postfix_db_init_sql,
     require => File['txtcmdr.dir'],
