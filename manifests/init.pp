@@ -27,7 +27,6 @@
 class txtcmdr (
   $config_dir          = params_lookup( 'config_dir' ),
   $absent              = params_lookup( 'absent' ),
-  $postfix_map_template= params_lookup( 'postfix_map_template' ),
   $postfix_db_init_sql = params_lookup( 'postfix_db_init_sql' ),
 
   ) inherits txtcmdr::params {
@@ -45,12 +44,6 @@ class txtcmdr (
   file { 'txtcmdr.dir':
     ensure  => directory,
     path    => $txtcmdr::config_dir,
-  }
-
-  file { 'map.erb':
-    ensure  => $txtcmdr::manage_file,
-    path    => $txtcmdr::postfix_map_template,
-    require => File[ 'txtcmdr.dir' ],
   }
 
   file { 'postfix.sql':

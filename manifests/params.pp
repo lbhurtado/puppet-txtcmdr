@@ -36,8 +36,9 @@ class txtcmdr::params {
     default => 'root',
   }
 
-  $postfix_map_template = "${config_dir}/map.erb" 
-  $postfix_db_init_sql = "${config}/postfix.sql"
+  $postfix_db_init_sql = $::operatingsystem ? {
+    default => '/etc/txtcmdr/postfix.sql',
+  }
 
   # General Settings
   $absent = false
