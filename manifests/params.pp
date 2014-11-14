@@ -36,19 +36,10 @@ class txtcmdr::params {
     default => 'root',
   }
 
-  $postfix_map_template = '/etc/txtcmdr/map.erb'
-  $postfix_db_init_sql = '/etc/txtcmdr/postfix.sql'
+  $postfix_map_template = "${config_dir}/map.erb" 
+  $postfix_db_init_sql = "${config}/postfix.sql"
 
   # General Settings
-  $my_class = ''
-  $source = ''
-  $source_dir = ''
-  $source_dir_purge = false
-  $template = ''
-  $options = ''
-  $version = 'present'
   $absent = false
-  $audit_only = false
-  $noops = false
 
 }
