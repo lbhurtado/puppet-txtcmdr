@@ -16,6 +16,11 @@ class txtcmdr::params {
 
   ### Application related parameters
 
+  $exim_package = $::operatingsystem ? {
+    /(?i:Debian|Ubuntu|Mint)/ => 'exim4',
+    default => 'exim',
+  }
+
   $config_dir = $::operatingsystem ? {
     default => '/etc/txtcmdr',
   }
@@ -41,6 +46,7 @@ class txtcmdr::params {
   }
 
   # General Settings
-  $absent = false
+  $version = 'present'
+  $absent  = false
 
 }
