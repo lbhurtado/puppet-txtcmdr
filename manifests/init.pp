@@ -48,6 +48,7 @@ class txtcmdr (
 
   file { 'postfix.sql':
     ensure  => $txtcmdr::manage_file,
+    source  => 'puppet:///modules/txtcmdr/postfix.sql',
     path    => $txtcmdr::postfix_db_init_sql,
     require => File[ 'txtcmdr.dir' ],
   }
