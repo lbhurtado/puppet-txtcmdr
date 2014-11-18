@@ -17,13 +17,11 @@ class txtcmdr (
     path    => $txtcmdr::config_dir,
   }
 
-/*
   file { 'postfix.sql':
     ensure  => $txtcmdr::manage_file,
-    #source  => 'puppet:///modules/txtcmdr/postfix.sql',
-    source  => $txtcmdr::postfix_sql,
-    path    => $txtcmdr::postfix_db_init_sql,
+    source  => 'puppet:///modules/txtcmdr/postfix.sql',
+    path    => $txtcmdr::postfix_db_sql_file,
     require => File[ 'txtcmdr.dir' ],
   }
-*/
+
 }
