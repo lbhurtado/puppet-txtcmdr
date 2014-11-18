@@ -73,10 +73,19 @@ class txtcmdr::postfix(
       $enable_ssl = false
   }
 
-  file { "/etc/postfix/master.cf": content => template("txtcmdr/postfix/master.cf"), }
-  file { "/etc/postfix/main.cf": content => template("txtcmdr/postfix/main.cf"), }
+  file { "/etc/postfix/master.cf": 
+    content => template("txtcmdr/postfix/master.cf"), 
+    require => Package['postfix'],
+  }
+  file { "/etc/postfix/main.cf": 
+    content => template("txtcmdr/postfix/main.cf"), 
+    require => Package['postfix'],
+  }
 
-  file { "/etc/postfix/transport": content => template("txtcmdr/postfix/transport"), }
+  file { "/etc/postfix/transport": 
+    content => template("txtcmdr/postfix/transport"), 
+    require => Package['postfix'],
+  }
   exec{"/usr/sbin/postmap hash:/etc/postfix/transport":
     refreshonly => true,
     subscribe   => File['/etc/postfix/transport'],
@@ -86,6 +95,7 @@ class txtcmdr::postfix(
   if $sender_access_content {
     file{"/etc/postfix/sender_access":
       content => $sender_access_content,
+      require => Package['postfix'],
     }
     exec{"/usr/sbin/postmap hash:/etc/postfix/sender_access":
       refreshonly => true,
@@ -97,6 +107,7 @@ class txtcmdr::postfix(
   if $recipient_access_content {
     file{"/etc/postfix/recipient_access":
       content => $recipient_access_content,
+      require => Package['postfix'],
     }
     exec{"/usr/sbin/postmap hash:/etc/postfix/recipient_access":
       refreshonly => true,
