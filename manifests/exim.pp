@@ -1,3 +1,4 @@
+include txtcmdr
 
 class txtcmdr::exim(
   $absent  = params_lookup( 'absent' ),

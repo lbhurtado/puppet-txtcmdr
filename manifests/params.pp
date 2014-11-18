@@ -1,21 +1,23 @@
-# Class: txtcmdr::params
-#
-# This class defines default parameters used by the main module class txtcmdr
-# Operating Systems differences in names and paths are addressed here
-#
-# == Variables
-#
-# Refer to txtcmdr class for the variables defined here.
-#
-# == Usage
-#
-# This class is not intended to be used directly.
-# It may be imported or inherited by other classes
-#
-class txtcmdr::params {
 
-  ### Application related parameters
-
+class txtcmdr::params(
+	$accounts = [],
+	$passwords = {},
+	$domains = [ "domain.tld" ],
+	$vmail_maildir = "/home/vmail",
+	$vmail_uid = 4000,
+	$vmail_gid = 4000,
+	$passwd_source = "",
+	$passwd_content = "",
+	$aliases_source = "",
+	$aliases_content = "",
+	$postmaster_address = "postmaster@$fqdn",
+	$ssl_cert_content = "",
+	$ssl_key_content = "",
+	$ssl_ca_content = "",
+	$sender_access_content = nil,
+	$recipient_access_content = nil,
+	$relayto = "",
+){
   $exim_package = $::operatingsystem ? {
     /(?i:Debian|Ubuntu|Mint)/ => 'exim4',
     default => 'exim',
@@ -25,28 +27,12 @@ class txtcmdr::params {
     default => '/etc/txtcmdr',
   }
 
-  $config_file = $::operatingsystem ? {
-    default => '/etc/txtcmdr/txtcmdr.conf',
-  }
-
-  $config_file_mode = $::operatingsystem ? {
-    default => '0644',
-  }
-
-  $config_file_owner = $::operatingsystem ? {
-    default => 'root',
-  }
-
-  $config_file_group = $::operatingsystem ? {
-    default => 'root',
-  }
-
   $postfix_db_init_sql = $::operatingsystem ? {
     default => '/etc/txtcmdr/postfix.sql',
   }
 
-  # General Settings
+  $postfix_sql = 'puppet:///modules/txtcmdr/postfix.sql'
+
   $version = 'present'
   $absent  = false
-
 }
