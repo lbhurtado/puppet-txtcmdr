@@ -1,3 +1,4 @@
+
 class txtcmdr::postfix(
   $mynetworks = "127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128",
   $aliases_content = $txtcmdr::params::aliases_content,
@@ -11,6 +12,37 @@ class txtcmdr::postfix(
   $maximal_queue_lifetime = "10d",
   $message_size_limit = "50000000",
 ) inherits txtcmdr::params{
+
+  package{ 'postfix': 
+    ensure => present,
+  }
+
+  package{ 'postfix-mysql': 
+    ensure  => present,
+    require => Package[ 'postfix' ],
+  }
+
+  service { 'postfix':
+    enable     => true,
+    ensure     => running,
+    hasrestart => true,
+    require    => Package[ 'postfix' ],
+    subscribe  => [
+      File [ '/etc/postfix/main.cf'  ], 
+      File [ '/etc/postfix/master.cf' ], 
+    ],
+  }
+
+  txtcmdr::postfix::sqlmap{ '/etc/postfix/mysql-virtual-mailbox-domains.cf':
+    postconf_key => 'virtual_mailbox_domains',
+    sqlmap_query => 'select 1 from virtual_domains where name=\'%s\''
+  }
+
+  file { '/etc/postfix/main.cf': 
+    content => template( 'txtcmdr/postfix/main.cf' ), 
+    require => Package[ 'postfix' ],
+  }
+
   if defined(Class["txtcmdr::dovecot"]) { 
     if $aliases_source {
       file{"/etc/aliases-dovecot":
@@ -28,24 +60,7 @@ class txtcmdr::postfix(
     }
   }
 
-  package{ "postfix": ensure => present }
-
-  package{ "postfix-mysql": 
-    ensure => present,
-    require => Package['postfix'],
-  }
-
-  service { "postfix":
-    enable  => "true",
-    ensure  => "running",
-    hasrestart     => true,
-    require => Package["postfix"],
-    subscribe => [
-      File["/etc/postfix/main.cf"], 
-      File["/etc/postfix/master.cf"], 
-    ],
-  }
-
+/************* ssl key/certificate *************/ 
   if $ssl_key_content and $ssl_cert_content {
     $enable_ssl = true
     file{ "/etc/ssl/certs/postfix-ca.crt":
@@ -72,26 +87,24 @@ class txtcmdr::postfix(
   } else {
       $enable_ssl = false
   }
+/************* ssl key/certificate *************/ 
 
-  file { "/etc/postfix/master.cf": 
-    content => template("txtcmdr/postfix/master.cf"), 
-    require => Package['postfix'],
-  }
-  file { "/etc/postfix/main.cf": 
-    content => template("txtcmdr/postfix/main.cf"), 
-    require => Package['postfix'],
-  }
 
+
+/************* /etc/postfix/transport *************/ 
   file { "/etc/postfix/transport": 
     content => template("txtcmdr/postfix/transport"), 
     require => Package['postfix'],
   }
+
   exec{"/usr/sbin/postmap hash:/etc/postfix/transport":
     refreshonly => true,
     subscribe   => File['/etc/postfix/transport'],
-    notify 	    => Service['postfix'],
+    notify 	=> Service['postfix'],
   }
+/************* /etc/postfix/transport *************/ 
 
+/************* sender access content  *************/ 
   if $sender_access_content {
     file{"/etc/postfix/sender_access":
       content => $sender_access_content,
@@ -103,7 +116,9 @@ class txtcmdr::postfix(
       notify 	    => Service['postfix'],
     }
   }
+/************* sender access content  *************/ 
 
+/************* recipient access content  *************/ 
   if $recipient_access_content {
     file{"/etc/postfix/recipient_access":
       content => $recipient_access_content,
@@ -115,6 +130,7 @@ class txtcmdr::postfix(
       notify 	    => Service['postfix'],
     }
   }
+/************* recipient access content  *************/ 
 
   cron{'google-aspmx-ipv4-fix':
     command => 'for d in aspmx.l.google.com alt1.aspmx.l.google.com alt2.aspmx.l.google.com alt3.aspmx.l.google.com alt4.aspmx.l.google.com aspmx2.googlemail.com aspmx3.googlemail.com aspmx4.googlemail.com aspmx5.googlemail.com ; do sed -i "/$d/d" /etc/hosts ; echo $(dig $d A +short) $d  >> /etc/hosts; done',
