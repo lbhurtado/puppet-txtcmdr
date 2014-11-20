@@ -19,7 +19,7 @@ define txtcmdr::postfix::sqlmap (
   }
 
   if $postconf_key {
-    txtcmdr::postfix::postconf{ 'virtual_mailbox_domains':
+    txtcmdr::postfix::postconf{ $postconf_key:
       value => $title 
   }
 
