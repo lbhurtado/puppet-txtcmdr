@@ -43,6 +43,11 @@ class txtcmdr::postfix(
     require => Package[ 'postfix' ],
   }
 
+  file { '/etc/postfix/master.cf': 
+    content => template( 'txtcmdr/postfix/master.cf' ), 
+    require => Package[ 'postfix' ],
+  }
+
   if defined(Class["txtcmdr::dovecot"]) { 
     if $aliases_source {
       file{"/etc/aliases-dovecot":
