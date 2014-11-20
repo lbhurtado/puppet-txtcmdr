@@ -31,7 +31,7 @@ class txtcmdr::params(
     default => '/etc/txtcmdr/postfix.sql',
   }
 
-  $postfix_sql = 'puppet:///modules/txtcmdr/postfix.sql'
+#  $postfix_sql = 'puppet:///modules/txtcmdr/postfix.sql'
 
   $version = 'present'
   $absent  = false
