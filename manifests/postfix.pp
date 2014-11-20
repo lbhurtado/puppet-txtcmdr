@@ -11,6 +11,7 @@ class txtcmdr::postfix(
   $sender_access_content = $txtcmdr::params::sender_access_content,
   $maximal_queue_lifetime = "10d",
   $message_size_limit = "50000000",
+  $initdb = $txtcmdr::params::postfix_db_init_sql,  
 ) inherits txtcmdr::params{
 
   package{ 'postfix': 
@@ -38,6 +39,16 @@ class txtcmdr::postfix(
     sqlmap_query => 'select 1 from virtual_domains where name=\'%s\''
   }
 
+  txtcmdr::postfix::sqlmap{ '/etc/postfix/mysql-virtual-mailbox-maps.cf':
+    postconf_key => 'virtual_mailbox_maps',
+    sqlmap_query => 'select 1 from virtual_users where email=\'%s\''
+  }
+
+  txtcmdr::postfix::sqlmap{ '/etc/postfix/mysql-virtual-alias-maps.cf':
+    postconf_key => 'virtual_alias_maps',
+    sqlmap_query => 'select 1 from virtual_aliases where source=\'%s\''
+  }
+
   file { '/etc/postfix/main.cf': 
     content => template( 'txtcmdr/postfix/main.cf' ), 
     require => Package[ 'postfix' ],
@@ -46,6 +57,21 @@ class txtcmdr::postfix(
   file { '/etc/postfix/master.cf': 
     content => template( 'txtcmdr/postfix/master.cf' ), 
     require => Package[ 'postfix' ],
+  }
+
+  file { $initdb: 
+    content => template( 'txtcmdr/postfix/postfix.sql' ), 
+    require => Package[ 'postfix' ],
+  }
+
+  group{'vmail': gid => 5000}
+
+  user{'vmail':
+    ensure     => present,
+    uid        => 5000,
+    gid        => 'vmail',
+    home       => '/var/vmail',
+    managehome => true,
   }
 
   if defined(Class["txtcmdr::dovecot"]) { 
