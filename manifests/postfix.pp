@@ -28,10 +28,12 @@ class txtcmdr::postfix(
     ensure     => running,
     hasrestart => true,
     require    => Package[ 'postfix' ],
+/*
     subscribe  => [
       File [ '/etc/postfix/main.cf'  ], 
       File [ '/etc/postfix/master.cf' ], 
     ],
+*/
   }
 
   txtcmdr::postfix::sqlmap{ '/etc/postfix/mysql-virtual-mailbox-domains.cf':
@@ -49,6 +51,7 @@ class txtcmdr::postfix(
     sqlmap_query => 'select 1 from virtual_aliases where source=\'%s\''
   }
 
+/*
   file { '/etc/postfix/main.cf': 
     content => template( 'txtcmdr/postfix/main.cf' ), 
     require => Package[ 'postfix' ],
@@ -58,6 +61,7 @@ class txtcmdr::postfix(
     content => template( 'txtcmdr/postfix/master.cf' ), 
     require => Package[ 'postfix' ],
   }
+*/
 
   file { $initdb: 
     content => template( 'txtcmdr/postfix/postfix.sql' ), 
