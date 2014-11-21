@@ -31,8 +31,29 @@ class txtcmdr::params(
     default => '/etc/txtcmdr/postfix.sql',
   }
 
-#  $postfix_sql = 'puppet:///modules/txtcmdr/postfix.sql'
-
   $version = 'present'
   $absent  = false
+
+  $mysql_mappings_defaults = {
+    'user'     => 'mailuser',
+    'password' => 'mailpassword',
+    'hosts'    => '127.0.0.1',
+    'dbname'   => 'mailserver',
+  }
+
+  $mysql_mappings = {
+    'virtual_mailbox_domains' => {
+      'filename' => '/etc/postfix/mysql-virtual-mailbox-domains.cf',
+      'query'    => 'SELECT 1 FROM virtual_domains WHERE name=\'%s\'',
+    },
+    'virtual_mailbox_maps' => {
+      'filename' => '/etc/postfix/mysql-virtual-mailbox-maps.cf',
+      'query'    => 'SELECT 1 FROM virtual_users WHERE email=\'%s\'',
+    },
+    'virtual_alias_maps' => { 
+      'filename' => '/etc/postfix/mysql-virtual-alias-maps.cf',
+      'query'    => 'SELECT 1 FROM virtual_aliases WHERE source=\'%s\'',
+    },
+  }
+
 }

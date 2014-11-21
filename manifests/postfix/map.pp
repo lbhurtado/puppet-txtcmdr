@@ -4,6 +4,8 @@ define txtcmdr::postfix::map ($maps) {
   file { $title:
     ensure  => present,
     path    => $title,
+    group   => 'postfix',
+    mode    => 'u=rw,g=r,o=',
     require => Package [ 'postfix' ],
     content => template ( 'txtcmdr/postfix/map.erb' ), 
   }

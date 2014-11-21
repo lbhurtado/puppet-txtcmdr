@@ -28,55 +28,46 @@ class txtcmdr::postfix(
     ensure     => running,
     hasrestart => true,
     require    => Package[ 'postfix' ],
-/*
     subscribe  => [
       File [ '/etc/postfix/main.cf'  ], 
-      File [ '/etc/postfix/master.cf' ], 
+#      File [ '/etc/postfix/master.cf' ], 
     ],
-*/
   }
 
-  txtcmdr::postfix::sqlmap{ '/etc/postfix/mysql-virtual-mailbox-domains.cf':
-    postconf_key => 'virtual_mailbox_domains',
-    sqlmap_query => 'select 1 from virtual_domains where name=\'%s\''
+  file { $txtcmdr::postfix::initdb: 
+    content => template( 'txtcmdr/postfix/postfix.sql.erb' ), 
+    require => Package[ 'postfix' ],
+  }
+  ->
+  exec{ "unlink ${txtcmdr::postfix::initdb}": }
+
+  mysql::db{$postfix_db:
+    user        => $postfix_user,
+    password    => $postfix_pass,
+    host        => $postfix_host,
+    grant       => ['SELECT'],
+    sql         => $txtcmdr::postfix::initdb,
+    enforce_sql => true,
+    require     => File[ $txtcmdr::postfix::initdb ],
   }
 
-  txtcmdr::postfix::sqlmap{ '/etc/postfix/mysql-virtual-mailbox-maps.cf':
-    postconf_key => 'virtual_mailbox_maps',
-    sqlmap_query => 'select 1 from virtual_users where email=\'%s\''
-  }
+  create_resources( 
+    txtcmdr::postfix::mysqlmap, 
+    $txtcmdr::postfix::mysql_mappings, 
+    $txtcmdr::postfix::mysql_mappings_defaults
+  )
 
-  txtcmdr::postfix::sqlmap{ '/etc/postfix/mysql-virtual-alias-maps.cf':
-    postconf_key => 'virtual_alias_maps',
-    sqlmap_query => 'select 1 from virtual_aliases where source=\'%s\''
+  file { '/etc/postfix/main.cf': 
+    content => template( 'txtcmdr/postfix/main.cf.erb' ), 
+    require => [ Class[ 'mysql::server' ], Package[ 'postfix' ] ],
   }
 
 /*
-  file { '/etc/postfix/main.cf': 
-    content => template( 'txtcmdr/postfix/main.cf' ), 
-    require => Package[ 'postfix' ],
-  }
-
   file { '/etc/postfix/master.cf': 
     content => template( 'txtcmdr/postfix/master.cf' ), 
     require => Package[ 'postfix' ],
   }
 */
-
-  file { $initdb: 
-    content => template( 'txtcmdr/postfix/postfix.sql' ), 
-    require => Package[ 'postfix' ],
-  }
-
-  group{'vmail': gid => 5000}
-
-  user{'vmail':
-    ensure     => present,
-    uid        => 5000,
-    gid        => 'vmail',
-    home       => '/var/vmail',
-    managehome => true,
-  }
 
   if defined(Class["txtcmdr::dovecot"]) { 
     if $aliases_source {
@@ -127,6 +118,7 @@ class txtcmdr::postfix(
 
 
 /************* /etc/postfix/transport *************/ 
+/*
   file { "/etc/postfix/transport": 
     content => template("txtcmdr/postfix/transport"), 
     require => Package['postfix'],
@@ -137,9 +129,11 @@ class txtcmdr::postfix(
     subscribe   => File['/etc/postfix/transport'],
     notify 	=> Service['postfix'],
   }
+*/
 /************* /etc/postfix/transport *************/ 
 
 /************* sender access content  *************/ 
+/*
   if $sender_access_content {
     file{"/etc/postfix/sender_access":
       content => $sender_access_content,
@@ -151,9 +145,11 @@ class txtcmdr::postfix(
       notify 	    => Service['postfix'],
     }
   }
+*/
 /************* sender access content  *************/ 
 
 /************* recipient access content  *************/ 
+/*
   if $recipient_access_content {
     file{"/etc/postfix/recipient_access":
       content => $recipient_access_content,
@@ -165,6 +161,7 @@ class txtcmdr::postfix(
       notify 	    => Service['postfix'],
     }
   }
+*/
 /************* recipient access content  *************/ 
 
   cron{'google-aspmx-ipv4-fix':
