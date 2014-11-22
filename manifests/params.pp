@@ -1,22 +1,28 @@
 
 class txtcmdr::params(
-	$accounts = [],
-	$passwords = {},
-	$domains = [ "domain.tld" ],
-	$vmail_maildir = "/home/vmail",
-	$vmail_uid = 4000,
-	$vmail_gid = 4000,
-	$passwd_source = "",
-	$passwd_content = "",
-	$aliases_source = "",
-	$aliases_content = "",
-	$postmaster_address = "postmaster@$fqdn",
-	$ssl_cert_content = "",
-	$ssl_key_content = "",
-	$ssl_ca_content = "",
-	$sender_access_content = nil,
-	$recipient_access_content = nil,
-	$relayto = "",
+  $accounts = [],
+  $passwords = {},
+  $domains = [ 'txtcmdr.xyz' ],
+  $vmail_maildir = '/var/vmail',
+  $vmail_uid = 5000,
+  $vmail_gid = 5000,
+  $passwd_source = "",
+  $passwd_content = "",
+  $aliases_source = "",
+  $aliases_content = "",
+  $postmaster_address = "postmaster@${fqdn}",
+  $ssl_cert_content = "",
+  $ssl_key_content = "",
+  $ssl_ca_content = "",
+  $sender_access_content = nil,
+  $recipient_access_content = nil,
+  $relayto = "",
+  
+  $mysql_user = 'mailuser',
+  $mysql_password = 'mailpassword',
+  $mysql_host = '127.0.0.1',
+  $mysql_grant = [ 'SELECT' ],
+      
 ){
   $exim_package = $::operatingsystem ? {
     /(?i:Debian|Ubuntu|Mint)/ => 'exim4',
@@ -56,4 +62,17 @@ class txtcmdr::params(
     },
   }
 
+  $ssl_data = {
+    key => {
+      extension => 'key',
+      target    => '/etc/ssl/private/mailserver.pem',
+      parameter  => 'smtpd_tls_key_file',
+    },
+    certificate => {
+      extension => 'crt',
+      target    => '/etc/ssl/certs/mailserver.pem',
+      parameter => 'smtpd_tls_cert_file',
+    },
+  } 
+    
 }

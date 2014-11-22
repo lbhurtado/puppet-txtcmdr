@@ -1,0 +1,65 @@
+
+<%if @enable_ssl %>
+
+disable_plaintext_auth = yes
+ssl = required
+ssl_protocols = !SSLv2 !SSLv3
+ssl_ca = </etc/ssl/certs/dovecot-ca.crt
+ssl_cert = </etc/ssl/certs/dovecot.crt
+ssl_key = </etc/ssl/private/dovecot.key
+
+<% else %>
+ssl = no
+disable_plaintext_auth = no
+<% end -%>
+
+auth_default_realm = <%= scope.lookupvar('txtcmdr::params::domains')[0] %>
+
+<% if @enable_sasl_postfix %>
+service auth {
+  unix_listener /var/spool/postfix/private/auth {
+    user = postfix
+    group = postfix
+    mode = 0660
+  }
+}
+<% end -%>
+
+mail_location = maildir:~/maildir
+
+passdb {
+  driver = passwd-file
+  args = /etc/dovecot/passwd
+}
+userdb {
+  driver = static
+  args = uid=vmail gid=vmail home=<%= @vmail_maildir %>/%d/%u
+<%if @enable_quota %>
+  default_fields = quota_rule=*:storage=1G
+<% end -%>
+}
+
+
+<%if @enable_quota %>
+mail_plugins = $mail_plugins quota
+protocol imap {
+  mail_plugins = $mail_plugins imap_quota
+}
+
+plugin {
+  quota = maildir
+}
+<% end -%>
+
+<%if @enable_sieve %>
+plugin {
+  sieve = ~/.dovecot.sieve
+  sieve_dir = ~/sieve
+}
+<% end -%>
+
+protocol lda {
+  mail_plugins = $mail_plugins sieve
+  postmaster_address = <%= @postmaster_address %>
+}
+

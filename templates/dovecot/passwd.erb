@@ -1,0 +1,5 @@
+<% @accounts.each do |account| -%>
+<%= account %>:<% if passwords.has_key?(account) %><%= passwords[account] %><% else %><%= passwords["default"] %><% end %>
+<% end -%>
+
+
