@@ -39,6 +39,11 @@ class txtcmdr::dovecot (
     mode   => 'u+w',
   }
 
+  file { '/etc/dovecot/dovecot.conf':
+    group => 'vmail',
+    mode => 'g+r',
+  }
+
   if $accounts {
     file{ '/etc/dovecot/passwd':
       content => template( 'txtcmdr/dovecot/passwd.erb' ),
@@ -141,6 +146,9 @@ class txtcmdr::dovecot (
 
   file { '/etc/dovecot/dovecot-sql.conf.ext':
     content => template( 'txtcmdr/dovecot/dovecot-sql.conf.ext.erb' ),
+    owner => 'root',
+    group => 'root',
+    mode  => 'go=',
   }
 
 }

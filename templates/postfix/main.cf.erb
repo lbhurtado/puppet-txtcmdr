@@ -41,6 +41,9 @@ recipient_delimiter = +
 inet_interfaces = all
 
 <% if classes.index('mysql::server') -%>
-<% @mysql_mappings.each do |key,value| %><%= key %> = <%= value['filename'] %>
+<% @mysql_mappings.each do |key,value| %><%= key %> = mysql:<%= value['filename'] %>
 <% end %>
 <% end -%>
+
+virtual_transport=dovecot
+dovecot_destination_recipient_limit=1
