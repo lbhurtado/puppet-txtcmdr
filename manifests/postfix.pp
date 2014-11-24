@@ -41,10 +41,10 @@ class txtcmdr::postfix(
   }
 
   mysql::db{ $postfix_db:
-    user        => $mysql_user,
-    password    => $mysql_pass,
-    host        => $mysql_host,
-    grant       => $mysql_grant,
+    user        => $txtcmdr::postfix::mysql_user,
+    password    => $txtcmdr::postfix::mysql_password,
+    host        => $txtcmdr::postfix::mysql_host,
+    grant       => $txtcmdr::postfix::mysql_grant,
     sql         => $txtcmdr::postfix::initdb,
     enforce_sql => true,
     require     => File[ $txtcmdr::postfix::initdb ],

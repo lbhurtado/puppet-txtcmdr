@@ -79,8 +79,15 @@ class txtcmdr::dovecot (
     hasrestart => true,
     require    => Package[ 'dovecot-imapd' ],
     subscribe  => [
-      File[ '/etc/dovecot/conf.d/99-puppet.conf' ],
-      File[ '/etc/dovecot/passwd' ],
+       File [ '/etc/dovecot/conf.d/10-auth.conf' ],
+       File [ '/etc/dovecot/conf.d/auth-sql.conf.ext' ],
+       File [ '/etc/dovecot/conf.d/10-mail.conf' ],
+       File [ '/etc/dovecot/conf.d/10-master.conf' ],
+       File [ '/etc/dovecot/conf.d/10-ssl.conf' ],
+       File [ '/etc/dovecot/conf.d/15-lda.conf' ],
+       File [ '/etc/dovecot/dovecot-sql.conf.ext' ],
+#      File[ '/etc/dovecot/conf.d/99-puppet.conf' ],
+#      File[ '/etc/dovecot/passwd' ],
     ],
   }
   
@@ -116,38 +123,48 @@ class txtcmdr::dovecot (
     }
   }
 
+/*
   file { '/etc/dovecot/conf.d/99-puppet.conf':
     content => template( 'txtcmdr/dovecot/99-puppet.conf.erb' ),
+    require => Package[ 'dovecot-imapd' ],
   }
+*/
 
   file { '/etc/dovecot/conf.d/10-auth.conf':
     content => template( 'txtcmdr/dovecot/10-auth.conf.erb' ),
+    require => Package[ 'dovecot-imapd' ],
   }
 
   file { '/etc/dovecot/conf.d/auth-sql.conf.ext':
     content => template( 'txtcmdr/dovecot/auth-sql.conf.ext.erb' ),
+    require => Package[ 'dovecot-imapd' ],
   }
 
   file { '/etc/dovecot/conf.d/10-mail.conf':
     content => template( 'txtcmdr/dovecot/10-mail.conf.erb' ),
+    require => Package[ 'dovecot-imapd' ],
   }
 
   file { '/etc/dovecot/conf.d/10-master.conf':
     content => template( 'txtcmdr/dovecot/10-master.conf.erb' ),
+    require => Package[ 'dovecot-imapd' ],
   }
 
   file { '/etc/dovecot/conf.d/10-ssl.conf':
     content => template( 'txtcmdr/dovecot/10-ssl.conf.erb' ),
+    require => Package[ 'dovecot-imapd' ],
   }
 
   file { '/etc/dovecot/conf.d/15-lda.conf':
     content => template( 'txtcmdr/dovecot/15-lda.conf.erb' ),
+    require => Package[ 'dovecot-imapd' ],
   }
 
   file { '/etc/dovecot/dovecot-sql.conf.ext':
     content => template( 'txtcmdr/dovecot/dovecot-sql.conf.ext.erb' ),
+    require => Package[ 'dovecot-imapd' ],
     owner => 'root',
-    group => 'root',
+    group => 'dovecot',
     mode  => 'go=',
   }
 
