@@ -34,24 +34,34 @@ class txtcmdr::postfix(
     ],
   }
 
-  file { 'postfix.sql':
-    path    => $txtcmdr::postfix::initdb,
-    content => template( 'txtcmdr/postfix/postfix.sql.erb' ), 
-    require => Package[ 'postfix' ],
+  file { 'postfix-mysql.dir':
+    ensure  => directory,
+    path    => '/etc/postfix/mysql',
+    require => Package [ 'postfix' ],
+  } 
+
+  file { 'mysql_vmail.sql':
+    ensure  => present,
+    path    => '/etc/postfix/mysql/mysql_vmail.sql',
+    require => File [ 'postfix-mysql.dir' ],
+    content => template( 'txtcmdr/mysql/mysql_vmail.sql.erb' ), 
+  }
+  
+  file { 'iredmail.mysql':
+    ensure  => present,
+    path    => '/etc/postfix/mysql/iredmail.mysql',
+    require => File [ 'postfix-mysql.dir' ],
+    content => template( 'txtcmdr/mysql/iredmail.mysql.erb' ), 
   }
 
-  mysql::db{ $postfix_db:
-    user        => $txtcmdr::postfix::mysql_user,
-    password    => $txtcmdr::postfix::mysql_password,
-    host        => $txtcmdr::postfix::mysql_host,
-    grant       => $txtcmdr::postfix::mysql_grant,
-    sql         => $txtcmdr::postfix::initdb,
-    enforce_sql => true,
-    require     => File[ $txtcmdr::postfix::initdb ],
-  }
-  ->
-  exec{ 'unlink postfix.sql':
-    command => "unlink ${txtcmdr::postfix::initdb}",
+  exec { 'populate mysql database vmail':
+    command => "mysql --user=root --password=linux < /etc/postfix/mysql/mysql_vmail.sql && touch /tmp/mysql_vmail_populated",
+    require => [
+      Class [ 'mysql::server'   ],
+      File  [ 'mysql_vmail.sql' ],
+      File  [ 'iredmail.mysql'  ],
+    ],
+    unless => "test -e /tmp/mysql_vmail_populated"
   }
 
   create_resources( 
