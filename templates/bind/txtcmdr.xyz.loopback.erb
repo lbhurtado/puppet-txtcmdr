@@ -1,0 +1,14 @@
+;
+; BIND reverse data file for local loopback interface
+;
+$TTL	604800
+@	IN	SOA	txtcmdr.xyz. root.txtcmdr.xyz. (
+			      1		; Serial
+			 604800		; Refresh
+			  86400		; Retry
+			2419200		; Expire
+			 604800 )	; Negative Cache TTL
+;
+@	IN	NS	txtcmdr.xyz.
+2	IN	PTR	txtcmdr.xyz.
+2	IN	PTR	www.txtcmdr.xyz.

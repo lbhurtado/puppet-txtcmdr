@@ -29,6 +29,19 @@ class txtcmdr::params(
     default => 'exim',
   }
 
+  $bind_package = $::operatingsystem ? {
+    /(?i:Debian|Ubuntu|Mint)/ => 'bind9',
+    default => 'bind',
+  }
+
+  $bind_service = $::operatingsystem ? {
+    default => 'bind9',
+  }
+
+  $bind_service_status = $::operatingsystem ? {
+    default => true,
+  }
+
   $config_dir = $::operatingsystem ? {
     default => '/etc/txtcmdr',
   }

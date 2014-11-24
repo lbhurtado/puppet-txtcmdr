@@ -22,6 +22,8 @@ class txtcmdr::dovecot (
 
 ) inherits txtcmdr::params {
 
+  require txtcmdr::postfix
+
   user { 'vmail':
     uid  => $vmail_uid,
     gid  => $vmail_gid,
